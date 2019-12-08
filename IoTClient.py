@@ -2,7 +2,6 @@ import socket, time
 
 print("Welcome to your home security system\n")
 
-
 #if __name__ == "main":
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: #creates a socket s
     s.connect(("10.17.111.161", 80))
