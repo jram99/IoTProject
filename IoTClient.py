@@ -19,7 +19,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
 
     while True:
         command = input("Command: ")  # assignes the user entry to a variable
-        s.send(b'GET /sensors HTTP/1.1\r\n\r\n')
-        time.sleep(1)
-        reply = s.recv(1024)
-        print(reply)
+
+        if command == 'START':
+            print(command)
+            s.send(b'Get /sensors HTTP/1.1\r\n\r\n')
+            time.sleep(1)
+            reply = s.recv(1024)
+            print(reply)
+
+        if command == 'QUIT':
+            print(command)
+            print("Disconnected")
+            s.close()
+            sys.exit(0)
