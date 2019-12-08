@@ -31,6 +31,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
                  
     while not terminated:
         command = input("Command: ")  # assignes the user entry to a variable
+<<<<<<< HEAD
         command.upper()
         inputArray = command.split(' ')
         ouput = ""
@@ -69,4 +70,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
         reply = s.recv(1024)
         print(reply)
         
+# End session and cleanup
+s.close()
 print("Session terminated")
+sys.exit(0)
+
