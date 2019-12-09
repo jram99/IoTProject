@@ -31,7 +31,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
                  
     while not terminated:
         command = input("Command: ")  # assignes the user entry to a variable
-<<<<<<< HEAD
         command.upper()
         inputArray = command.split(' ')
         ouput = ""
