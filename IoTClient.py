@@ -69,7 +69,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
         s.send(output)
         time.sleep(1)
         reply = s.recv(1024)
-        reply = reply.split("close\r\n")
+        reply = reply.decode().split("close\r\n")
         print(reply[1])
         
 # End session and cleanup
