@@ -38,11 +38,13 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
         if inputArray[0] == 'EXIT':
             terminated = True
             print("Ending session...")
+            output = b" "
         elif inputArray[0] == 'LIST':
             print("Proximity sensor on front door (0 or 1) - DOOR")
             print("Temperature sensor for lower floor (Fahrenheit) - TEMP")
             print("Outdoor light infront of main door (0 or 1) - LIGHT")
             print("Burgler alarm indicator (0 or 1) - BUZZ")
+            output = b" "
         elif inputArray[0] == 'QUERY':
             if inputArray[1] == 'ALL':
                 output = b'GET /sensors HTTP/1.1\r\n\r\n'
@@ -67,7 +69,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
         s.send(output)
         time.sleep(1)
         reply = s.recv(1024)
-        print(reply)
+        reply = reply.split("close\r\n")
+        print(reply[1])
         
 # End session and cleanup
 s.close()
