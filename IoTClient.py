@@ -30,8 +30,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
     print("8. EXIT -                 End current session")
 
     while not terminated:
-        command = input("Command: ")  # assignes the user entry to a variable
-        command.upper()
+        command = input("Command: ").upper()  # assignes the user entry to a variable
         inputArray = command.split(' ')
         output = ""
         timer = 1
@@ -57,23 +56,53 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
                 output = b'GET /sensors/temperature HTTP/1.1\n\r\n'
             elif inputArray[1] == 'LIGHT':
                 output = b'GET /sensors/light HTTP/1.1\n\r\n'
+            s.send(output)
         elif inputArray[0] == 'SET':
             if inputArray[1] == 'ALARM':
-                if inputArray[2] == 0:
-                    output = b'PUT /buzz/off HTTP/1.1\n\r\n'
-                elif inputArray[2] == 1:
+                if inputArray[2] == 'ON':
+                    alert = False
+                    while not alert:
+                        s.send(b'GET /sensors HTTP/1.1\r\n\r\n')
+                        time.sleep(5)
+                        data = s.recv(1024)
+                        data = data.decode()
+                        #update = "" + data + ""
+                        if '"proximity": 0' in data:
+                            s.send(b'PUT /buzz/beeps HTTP/1.1\n\r\n')
+                            s.send(b'PUT /led/on HTTP/1.1\n\r\n')
+                            print("Door is open!")
+                            alert = True
+
+                    #output = b'PUT /buzz/off HTTP/1.1\n\r\n'
+                elif inputArray[2] == '1':
                     output = b'PUT /buzz/beeps HTTP/1.1\n\r\n'
             elif inputArray[1] == 'LIGHT':
-                if inputArray[2] == 0:
-                    output = b'PUT /light/off HTTP/1.1\n\r\n'
-                elif inputArray[2] == 1:
-                    output = b'PUT /light/on HTTP/1.1\n\r\n'
+                if inputArray[2] == '0':
+                    output = b'PUT /led/off HTTP/1.1\n\r\n'
+                elif inputArray[2] == '1':
+                    output = b'PUT /led/on HTTP/1.1\n\r\n'
+                s.send(output)
         elif inputArray[0] == 'START':
+            f = open("data.txt", 'w+')
             while inputArray[0] != 'STOP':
                 s.send(b'GET /sensors HTTP/1.1\r\n\r\n')
                 timer = 5
+                time.sleep(5)
+                data = s.recv(1024)
+                data = data.decode().split("close\r\n")
+                data = data[1]
 
-        s.send(output)
+                # log = s.recv(1024)
+                # log = log.decode().split("close\r\n")
+                log = "" + data + ""
+                f.write(log)
+                    #data = s.recv(1024)
+                print(log)
+                f.flush()
+            f.close()
+        else:
+            print("Invalid Input")
+            break
         time.sleep(timer)
         reply = s.recv(1024)
         reply = reply.decode().split("close\r\n")
