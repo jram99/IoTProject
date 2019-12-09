@@ -8,7 +8,7 @@ otherIP = input("Please enter the ip address of the server: ")
 # if __name__ == "main":
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket s
     terminated = False
-    
+
     try:
         print("Trying to connect on " + str(otherIP) + ":" + str(port) + "...")
         s.connect((otherIP, port))
@@ -18,7 +18,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
         sys.exit(0)
 
     print("Connected Successfully\n")
-    
+
     print("Use the following prompts for their respective actions:")
     print("1. LIST -                 List hardware (and options) available")
     print("2. QUERY <sensor> -       Query value of specific sensor (from LIST)")
@@ -28,17 +28,20 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
     print("6. START -                Start logging sensor data")
     print("7. STOP -                 Stop logging sensor data")
     print("8. EXIT -                 End current session")
-                 
+
     while not terminated:
         command = input("Command: ")  # assignes the user entry to a variable
         command.upper()
         inputArray = command.split(' ')
-        ouput = ""
-        
+        output = ""
+        timer = 1
+
         if inputArray[0] == 'EXIT':
             terminated = True
             print("Ending session...")
             output = b" "
+            s.close()
+            sys.exit(0)
         elif inputArray[0] == 'LIST':
             print("Proximity sensor on front door (0 or 1) - DOOR")
             print("Temperature sensor for lower floor (Fahrenheit) - TEMP")
@@ -65,15 +68,18 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
                     output = b'PUT /light/off HTTP/1.1\n\r\n'
                 elif inputArray[2] == 1:
                     output = b'PUT /light/on HTTP/1.1\n\r\n'
-        
+        elif inputArray[0] == 'START':
+            while inputArray[0] != 'STOP':
+                s.send(b'GET /sensors HTTP/1.1\r\n\r\n')
+                timer = 5
+
         s.send(output)
-        time.sleep(1)
+        time.sleep(timer)
         reply = s.recv(1024)
-        reply = reply.split("close\r\n")
+        reply = reply.decode().split("close\r\n")
         print(reply[1])
-        
+
 # End session and cleanup
 s.close()
 print("Session terminated")
 sys.exit(0)
-
