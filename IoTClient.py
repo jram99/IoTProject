@@ -1,4 +1,10 @@
-import socket, time, sys
+import socket, time, sys, email, smtplib, ssl
+
+
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 print("Welcome to your home security system\n")
 
@@ -44,8 +50,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
         elif inputArray[0] == 'LIST':
             print("Proximity sensor on front door (0 or 1) - DOOR")
             print("Temperature sensor for lower floor (Fahrenheit) - TEMP")
-            print("Outdoor light infront of main door (0 or 1) - LIGHT")
-            print("Burgler alarm indicator (0 or 1) - BUZZ")
+            print("Outdoor light in front of main door (0 or 1) - LIGHT")
+            print("Burglar alarm indicator (0 or 1) - BUZZ")
             output = b" "
         elif inputArray[0] == 'QUERY':
             if inputArray[1] == 'ALL':
@@ -56,6 +62,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
                 output = b'GET /sensors/temperature HTTP/1.1\n\r\n'
             elif inputArray[1] == 'LIGHT':
                 output = b'GET /sensors/light HTTP/1.1\n\r\n'
+            else:
+                print("Invalid Input")
+                break
             s.send(output)
         elif inputArray[0] == 'SET':
             if inputArray[1] == 'ALARM':
@@ -81,6 +90,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket
                     output = b'PUT /led/off HTTP/1.1\n\r\n'
                 elif inputArray[2] == '1':
                     output = b'PUT /led/on HTTP/1.1\n\r\n'
+                else:
+                    print("Invalid Input")
+                    break
                 s.send(output)
         elif inputArray[0] == 'START':
             f = open("data.txt", 'w+')
