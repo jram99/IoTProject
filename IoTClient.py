@@ -1,23 +1,19 @@
 import socket, time, sys, email, smtplib, ssl, threading
 
 
-from email import encoders
-from email.mime.base import MIMEBase
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-
 print("Welcome to your home security system\n")
 
 port = 80
 otherIP = input("Please enter the ip address of the server: ")
-password = "Password1$"
+email_password = "P@$$word1!"
 sender = "comp342gccf19@gmail.com"
 recipient = "ramjac13@gmail.com"
-alarm = False
+alarm = True
+actuator_password = "Turtles"
+
+msg1 = "From: me \r\nTo: you \r\nSubject: subject \r\n\r\nALERT ALERT! YOUR DOOR IS OPEN!\r\n"
 
 
-# if __name__ == "main":
-#with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket s
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # try:
@@ -75,6 +71,7 @@ def getinput():
         elif inputArray[0] == 'SET':
             if inputArray[1] == 'ALARM':
                 if inputArray[2] == 'ON':
+                    #here is part of the problem
                     alarm = True
 
                     #output = b'PUT /buzz/off HTTP/1.1\n\r\n'
@@ -89,8 +86,11 @@ def getinput():
                     print("Invalid Input")
                     break
         elif inputArray[0] == 'START':
+            print("Starting log")
             f = open("data.txt", 'w+')
+
             while inputArray[0] != 'STOP':
+                #inputArray[0] = input("Type STOP to stop logging")
                 s.send(b'GET /sensors HTTP/1.1\r\n\r\n')
                 timer = 5
                 time.sleep(5)
@@ -114,6 +114,7 @@ def getinput():
 
 # End session and cleanup
 def setAlarm():
+    #here is part of the problem
     global alarm
     if alarm:
         alert = False
@@ -126,6 +127,11 @@ def setAlarm():
                 s.send(b'PUT /buzz/beeps HTTP/1.1\n\r\n')
                 s.send(b'PUT /led/on HTTP/1.1\n\r\n')
                 print("Door is open!")
+                mailer = smtplib.SMTP_SSL('smtp.gmail.com',465)
+                mailer.ehlo()
+                mailer.login(sender, email_password)
+                mailer.sendmail(sender, recipient, msg1)
+                mailer.close()
                 alert = True
 
 
