@@ -116,7 +116,6 @@ def getinput():
 def setAlarm():
     global alarm
     if alarm:
-        print("FAIL")
         alert = False
         while not alert:
             s.send(b'GET /sensors HTTP/1.1\r\n\r\n')
