@@ -15,6 +15,7 @@ sender = "comp342gccf19@gmail.com"
 recipient = "ramjac13@gmail.com"
 alarm = False
 
+
 # if __name__ == "main":
 #with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # creates a socket s
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -42,6 +43,7 @@ print("7. STOP -                 Stop logging sensor data")
 print("8. EXIT -                 End current session")
 
 def getinput():
+    global alarm
     while True:
         command = input("Command: ").upper()  # assignes the user entry to a variable
         inputArray = command.split(' ')
@@ -75,7 +77,6 @@ def getinput():
                 if inputArray[2] == 'ON':
                     alarm = True
 
-
                     #output = b'PUT /buzz/off HTTP/1.1\n\r\n'
                 elif inputArray[2] == '1':
                     s.send(b'PUT /buzz/beeps HTTP/1.1\n\r\n')
@@ -107,12 +108,15 @@ def getinput():
             break
         time.sleep(timer)
         reply = s.recv(1024)
+        time.sleep(1)
         reply = reply.decode().split("close\r\n")
         print(reply[1])
 
 # End session and cleanup
 def setAlarm():
+    global alarm
     if alarm:
+        print("FAIL")
         alert = False
         while not alert:
             s.send(b'GET /sensors HTTP/1.1\r\n\r\n')
