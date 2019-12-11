@@ -4,8 +4,7 @@ import socket, time, sys, email, smtplib, ssl, threading
 print("Welcome to your home security system\n")
 
 port = 80
-#otherIP = input("Please enter the ip address of the server: ")
-otherIP = "10.17.110.123"
+otherIP = input("Please enter the ip address of the server: ")
 email_password = "P@$$word1!"
 sender = "comp342gccf19@gmail.com"
 recipient = "ramjac13@gmail.com"
